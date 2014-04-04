@@ -1,47 +1,63 @@
-<?php
-include_once('../include/webzone.php');
+<?PHP
 
-$current_page = 'export';
-
-include_once('./include/presentation/header.php');
-?>
-
-<div class="container">	
-	<div class="span-24">
-	
-	<div class="blueBox" style="padding:5px;">
-		<div>From this page you can export your users data into a CSV format.</div>
-	</div>
-	<br>
-	
-	<?php
-	
-	echo '<form id="export_form" name="export_form">';
-	
-		echo '<p><b>Please select the data you want to export:</b></p>';
+require_once('auth.php');
+require_once('../includes/config.php');
+$data = array();
+foreach($_POST as $key=>$value){
+$data[] = $key;
+}
+if(count($data)>0){
+$query = "SELECT ".implode(",",$data) ." FROM users WHERE 1";
+if( !$global['demo'] ){
+admin_csvexport($query);
+}else{
+$error_message = "Action disabled in demo mode";
+}
+}
+;echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+<title>Page Title Here</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" href="styles/style.css" type="text/css" />
+<script type="text/javascript">
+function exportSubmit()
+{
+document.getElementById(\'export\').submit();
+}
+</script>
+</head>
+<body>
+<div id="container">
+	<div id="content">
+		<div id="left-sidebar" >
+			<a class="button blue1" href="index.php">SETTINGS</a>
+			<a class="button blue1" href="users.php">USERS</a>
+			<a class="button blue1_active" href="export.php">EXPORT</a>
+		</div>
+		<div id="main" >
+			';
+if($global['demo']) echo "<div class='info'>Demo Mode: Some functions are disabled</div>";
+if(isset($success_message)) echo "<div class='success'>$success_message</div>";
+if(isset($error_message)) echo "<div class='error'>$error_message</div>";
+;echo '			<h2>Please select the data you want to export:</h2>
+			<form action="" method="post" id="export" >
+			<input type="checkbox" name="name" >
+			<span>Name</span></br>
+			<input type="checkbox" name="email" >
+			<span>Email</span></br>
+			<input type="checkbox" name="uid" >
+			<span>Facebook ID</span></br>			
+			<input type="checkbox" name="access_token" >
+			<span>Access Token</span></br>
+			<a onclick="exportSubmit()" class="button blue1" href="#">EXPORT</a>
+			</form>
 		
-		echo '<div><label><input id="fb_id" name="fb_id" type="checkbox"> User id</label></div>';
-		echo '<div><label><input id="fb_name" name="fb_name" type="checkbox"> Name</label></div>';
-		echo '<div><label><input id="fb_email" name="fb_email" type="checkbox"> Email</label></div>';
-		echo '<div><label><input id="fb_token" name="fb_token" type="checkbox"> Token</label></div>';
-		echo '<div><label><input id="fb_token_expires" name="fb_token_expires" type="checkbox"> Token expiration</label></div>';
-		echo '<div><label><input id="fb_birthday" name="fb_birthday" type="checkbox"> Birthday</label></div>';
-		echo '<div><label><input id="created" name="created" type="checkbox"> Connection date</label></div>';
-		
-		echo '<p style="margin-top:10px;"><input type="submit" id="export_btn" value="Export"> - <a href="./">Cancel</a></p>';
-	
-	echo '</form>';
-	
-	?>
-	
-	<div id="export_results_box" style="display:none;">
-		<div id="export_results"></div>
-		<p style="margin-top:10px;"><a href="#" id="export_box_display_btn">Back to previous</a></p>
+		</div>
+		<div class="clearfix"><!-- --></div> 
 	</div>
-	
-	</div>
-</div>
-
-<?php
-include_once('./include/presentation/footer.php');
+   <p style="text-align: center;">Developed by: <a href="http://appstico.com" target="_blank">Appstico.com</a></p><br><br>
+</div><!-- container End -->
+</body>
+</html>';;
 ?>
